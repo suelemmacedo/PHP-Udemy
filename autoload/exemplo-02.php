@@ -18,7 +18,7 @@ spl_autoload_register(function($nomeClasse){
 
 
 $carro = new DelRey();
-$carro->acelerar(80);
+$carro->acelerar(80 );
 
 
  ?>
