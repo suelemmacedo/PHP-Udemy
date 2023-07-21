@@ -52,14 +52,23 @@ require_once("config.php");
 
 //6) Atualizando usuário:
 
+//$usuario = new Usuario();
+
+//$usuario->loadById(26);
+
+//$usuario->update("kath", "910228");
+
+//echo $usuario;
+
+//7) Deletando usuários:
+
 $usuario = new Usuario();
 
-$usuario->loadById(26);
+$usuario->loadById(21);
 
-$usuario->update("kath", "910228");
+$usuario->delete();
 
 echo $usuario;
-
 
 
 ?>

@@ -10,49 +10,41 @@ class Usuario {
     private $dtcadastro;
 
     public function getIdusuario(){
-
         return $this->idusuario;
 
     }
 
     public function setIdusuario($value){
-
         $this->idusuario = $value;
 
     }
 
     public function getDeslogin(){
-
         return $this->deslogin;
 
     }
 
     public function setDeslogin($value){
-
         $this->deslogin = $value;
 
     }
 
     public function getDessenha(){
-
         return $this->dessenha;
 
     }
 
     public function setDessenha($value){
-
         $this->dessenha = $value;
 
     }
 
     public function getDtcadastro(){
-
         return $this->dtcadastro;
 
     }
 
     public function setDtcadastro($value){
-
         $this->dtcadastro = $value;
 
     }
@@ -66,21 +58,16 @@ class Usuario {
         $results = $sql->select("SELECT * FROM tb_usuarios WHERE idusuario = :ID", [
 
             ":ID"=>$id
-
         ]);
 
         if (count($results) > 0) {
-
             $this->setData($results[0]);
-
         }
-
     }
 
     public static function getList(){
 
         $sql = new Sql();
-
         return $sql->select("SELECT * FROM tb_usuarios ORDER BY deslogin;");
     }
 
@@ -99,20 +86,15 @@ class Usuario {
         $sql = new Sql();
 
         $results = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN AND dessenha = :PASSWORD", [
-
             ":LOGIN"=>$login,
             ":PASSWORD"=>$password,
-
         ]);
 
         if (count($results) > 0) {
-
             $this->setData($results[0]);
 
         } else {
-
             throw new Exception("Login ou senha inválidos.");
-            
         }
     }
 
@@ -152,10 +134,12 @@ class Usuario {
 
     public function update($login, $password){
 
-        $this-> setDeslogin($login);
-        $this-> setDessenha($password);
+        // uma função de atualização de dados de um usuário em um banco de dados. Os parâmetros acima da função representam um novo login e senha do usuário que deseja-se atualizar. Os métodos abaixos são responsáveis por atualizar as propriedades $deslogin e $dessenha do objeto com os novos valores recebidos como parâmetros.
 
-        $sql = new Sql();
+        $this->setDeslogin($login);
+        $this->setDessenha($password);
+
+        $sql = new Sql(); // Cria-se uma instância sql.
 
         $sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD WHERE idusuario = :ID", [
 
@@ -164,6 +148,21 @@ class Usuario {
             ':ID'=>$this->getIdusuario()
 
         ]);
+    }
+
+    public function delete(){
+
+        $sql = new Sql();
+
+        $sql->query("DELETE FROM tb_usuarios WHERE idusuario = :ID", [
+
+            ':ID'=>$this->getIdusuario()
+        ]);
+
+        $this->setidusuario(0);
+        $this->setdeslogin("");
+        $this->setdessenha("");
+        $this->setdtcadastro( new DateTime());
     }
 
     public function __toString(){
