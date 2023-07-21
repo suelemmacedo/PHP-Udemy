@@ -71,15 +71,99 @@ class Usuario {
 
         if (count($results) > 0) {
 
-            $row = $results[0];
-
-            $this->setIdusuario($row['idusuariO']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new DateTime($row['dtcadastro']));
+            $this->setData($results[0]);
 
         }
 
+    }
+
+    public static function getList(){
+
+        $sql = new Sql();
+
+        return $sql->select("SELECT * FROM tb_usuarios ORDER BY deslogin;");
+    }
+
+
+    public static function search($login){
+        
+        $sql = new Sql();
+
+        return $sql->select("SELECT * FROM tb_usuarios WHERE deslogin LIKE :SEARCH ORDER BY deslogin", [
+        ':SEARCH' => '%'.$login.'%'
+        ]);
+    }
+
+    public function login($login, $password){
+
+        $sql = new Sql();
+
+        $results = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN AND dessenha = :PASSWORD", [
+
+            ":LOGIN"=>$login,
+            ":PASSWORD"=>$password,
+
+        ]);
+
+        if (count($results) > 0) {
+
+            $this->setData($results[0]);
+
+        } else {
+
+            throw new Exception("Login ou senha inválidos.");
+            
+        }
+    }
+
+    public function setData($data){
+
+            $this->setIdusuario($data['idusuariO']);
+            $this->setDeslogin($data['deslogin']);
+            $this->setDessenha($data['dessenha']);
+            $this->setDtcadastro(new DateTime($data['dtcadastro']));
+
+    }
+
+    public function insert(){
+        // 'sp_usuarios_insert' corresponde a um stored procedure (procedimento armazenado). O 'CALL' é uma instrução SQL usada para executar uma stored procedure em um banco de dados. Uma stored procedure é um conjunto de instruções SQL pré-compiladas que são armazenadas no banco de dados e podem ser chamadas e executadas posteriormente.
+
+        $sql = new Sql(); // Criação do objeto Sql, usado para executar consultas no banco de dados. E abaixo, ela chama o método select no objeto Sql, passando uma chamada ao procedimento armazenado "sp_usuarios_insert". O procedimento recebe dois parâmetros, o login e a senha e insere uma nova linha na tabela usuarios no banco de dados.
+
+        $results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)", [
+            ':LOGIN'=>$this->getDeslogin(),
+            ':PASSWORD'=>$this->getDessenha()
+        ]);
+
+        if(count($results) > 0) { // Verifica se a consulta retornou algum resultado. Caso positivo, o código continua.
+            $this->setData($results[0]);
+            // Chama o método "setData", passando o primeiro resultado da consulta para configurar os atributos da instância atual da classe com os dados retornados.
+        }
+    }
+
+    public function __construct($login = "", $password = ""){
+
+        // Esse é o construtor da classe, ele é executado automaticamente sempre que um novo objeto dessa classe é criado. Ele aceita dois parâmetros opcionais: $login e $password. O construtor chama os métodos setDeslogin e setDessenha para configurar os valores dos atributos $deslogin e $dessenha com os valores passados como argumentos.
+
+        $this->setDeslogin($login);
+        $this->setDessenha($password);
+
+    }
+
+    public function update($login, $password){
+
+        $this-> setDeslogin($login);
+        $this-> setDessenha($password);
+
+        $sql = new Sql();
+
+        $sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD WHERE idusuario = :ID", [
+
+            ':LOGIN'=>$this->getDeslogin(),
+            ':PASSWORD'=>$this->getDessenha(),
+            ':ID'=>$this->getIdusuario()
+
+        ]);
     }
 
     public function __toString(){
